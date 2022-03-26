@@ -1,0 +1,69 @@
+controller:
+  imageName: "openwhiskansjin/controller"
+  imageTag: "1"
+  replicaCount: 1
+  jvmHeapMB: "4192"
+whisk:
+  limits:
+    actionsInvokesPerminute: 600
+    actionsInvokesConcurrent: 300
+    triggersFiresPerminute: 600
+    actionsSequenceMaxlength: 500
+    actions:
+      time:
+        min: "10ms"
+        max: "600m"
+        std: "100m"
+      memory:
+        min: "16m"
+        max: "4192m"
+        std: "16m"
+      concurrency:
+        min: 1
+        max: 500
+        std: 5
+      log:
+        min: "0m"
+        max: "100m"
+        std: "10m"
+    activation:
+      payload:
+        max: "10485760"
+  loadbalancer:
+    blackboxFraction: "100%"
+  containerPool:
+    userMemory: "8384m"
+  ingress:
+    type: NodePort
+    apiHostName: 34.134.77.194
+    apiHostPort: 31001
+k8s:
+  persistence:
+    enabled: false
+nginx:
+  httpsNodePort: 31001
+invoker:
+  imageName: "openwhiskansjin/invoker"
+  imageTag: "1"
+
+  jvmHeapMB: "2048"
+  options: "-Dwhisk.spi.LogStoreProvider=org.apache.openwhisk.core.containerpool.logging.LogDriverLogStoreProvider"
+  containerFactory:
+    impl: "kubernetes"
+    replicaCount: 3
+    
+zipkin:
+  httpNodePort: 31000    
+grafana:
+  adminPassword: "admin_ansjin"
+metrics:
+  prometheusEnabled: true
+metrics:
+  userMetricsEnabled: true
+
+affinity:
+  enabled: false
+toleration:
+  enabled: false
+invoker:
+  options: "-Dwhisk.kubernetes.user-pod-node-affinity.enabled=false"
